@@ -1,22 +1,26 @@
 import { useQuery } from '@tanstack/react-query';
-import useAxiosSecure from '../../hooks/useAxiosSecure';
+import { useSearchParams } from 'react-router';
+import useAxiosCommon from '../../hooks/useAxiosCommon';
 import Container from '../Shared/Container';
 import Heading from '../Shared/Heading';
 import LoadingSpinner from '../Shared/LoadingSpinner';
 import Card from './Card';
-import useAxiosCommon from '../../hooks/useAxiosCommon';
 
 const Rooms = () => {
   // const [rooms, setRooms] = useState([]);
   // const [loading, setLoading] = useState(false);
   const axiosCommon = useAxiosCommon();
+  const [prams, setPrams] = useSearchParams();
+
+  const category = prams.get('category');
+  console.log(category);
 
   /** Fetch Data From Server with Tanstack */
   const { data: rooms = [], isLoading } = useQuery({
-    queryKey: ['rooms'],
+    queryKey: ['rooms', category],
     queryFn: async () => {
-      const { data } = await axiosCommon.get('/rooms');
-      console.log(data);
+      const { data } = await axiosCommon.get(`/rooms?category=${category}`);
+      // console.log(data);
       return data;
     },
   });
