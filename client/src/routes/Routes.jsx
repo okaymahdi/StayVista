@@ -1,27 +1,39 @@
-import { createBrowserRouter } from 'react-router-dom'
-import Main from '../layouts/Main'
-import Home from '../pages/Home/Home'
-import ErrorPage from '../pages/ErrorPage'
-import Login from '../pages/Login/Login'
-import SignUp from '../pages/SignUp/SignUp'
-import RoomDetails from '../pages/RoomDetails/RoomDetails'
+import { createBrowserRouter } from 'react-router';
+import Main from '../layouts/Main';
+import Home from '../pages/Home/Home';
+import ErrorPage from '../pages/ErrorPage';
+import Login from '../pages/Login/Login';
+import SignUp from '../pages/SignUp/SignUp';
+import RoomDetails from '../pages/RoomDetails/RoomDetails';
+import { Component } from 'react';
+import { RouterProvider } from 'react-router';
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <Main />,
+    Component: Main,
     errorElement: <ErrorPage />,
     children: [
       {
-        path: '/',
-        element: <Home />,
+        index: true,
+        Component: Home,
       },
       {
         path: '/room/:id',
-        element: <RoomDetails />,
+        Component: RoomDetails,
       },
     ],
   },
-  { path: '/login', element: <Login /> },
-  { path: '/signup', element: <SignUp /> },
-])
+  { path: '/login', Component: Login },
+  { path: '/signup', Component: SignUp },
+]);
+
+const AppRouter = () => {
+  return (
+    <div>
+      <RouterProvider router={router} />
+    </div>
+  );
+};
+
+export { AppRouter };

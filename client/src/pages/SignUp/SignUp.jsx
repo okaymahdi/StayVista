@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom'
-import { FcGoogle } from 'react-icons/fc'
+import { Link } from 'react-router';
+import { FcGoogle } from 'react-icons/fc';
 
 const SignUp = () => {
   return (
@@ -16,7 +16,10 @@ const SignUp = () => {
         >
           <div className='space-y-4'>
             <div>
-              <label htmlFor='email' className='block mb-2 text-sm'>
+              <label
+                htmlFor='email'
+                className='block mb-2 text-sm'
+              >
                 Name
               </label>
               <input
@@ -29,7 +32,10 @@ const SignUp = () => {
               />
             </div>
             <div>
-              <label htmlFor='image' className='block mb-2 text-sm'>
+              <label
+                htmlFor='image'
+                className='block mb-2 text-sm'
+              >
                 Select Image:
               </label>
               <input
@@ -41,7 +47,10 @@ const SignUp = () => {
               />
             </div>
             <div>
-              <label htmlFor='email' className='block mb-2 text-sm'>
+              <label
+                htmlFor='email'
+                className='block mb-2 text-sm'
+              >
                 Email address
               </label>
               <input
@@ -56,7 +65,10 @@ const SignUp = () => {
             </div>
             <div>
               <div className='flex justify-between'>
-                <label htmlFor='password' className='text-sm mb-2'>
+                <label
+                  htmlFor='password'
+                  className='text-sm mb-2'
+                >
                   Password
                 </label>
               </div>
@@ -105,7 +117,7 @@ const SignUp = () => {
         </p>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default SignUp
+export default SignUp;

@@ -1,13 +1,13 @@
-import Container from '../Container'
-import { AiOutlineMenu } from 'react-icons/ai'
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import useAuth from '../../../hooks/useAuth'
-import avatarImg from '../../../assets/images/placeholder.jpg'
+import Container from '../Container';
+import { AiOutlineMenu } from 'react-icons/ai';
+import { useState } from 'react';
+import { Link } from 'react-router';
+import useAuth from '../../../hooks/useAuth';
+import avatarImg from '../../../assets/images/placeholder.jpg';
 
 const Navbar = () => {
-  const { user, logOut } = useAuth()
-  const [isOpen, setIsOpen] = useState(false)
+  const { user, logOut } = useAuth();
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className='fixed w-full bg-white z-10 shadow-sm'>
@@ -100,7 +100,7 @@ const Navbar = () => {
         </Container>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;

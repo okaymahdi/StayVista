@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom'
-import { FcGoogle } from 'react-icons/fc'
+import { Link } from 'react-router';
+import { FcGoogle } from 'react-icons/fc';
 
 const Login = () => {
   return (
@@ -18,7 +18,10 @@ const Login = () => {
         >
           <div className='space-y-4'>
             <div>
-              <label htmlFor='email' className='block mb-2 text-sm'>
+              <label
+                htmlFor='email'
+                className='block mb-2 text-sm'
+              >
                 Email address
               </label>
               <input
@@ -33,7 +36,10 @@ const Login = () => {
             </div>
             <div>
               <div className='flex justify-between'>
-                <label htmlFor='password' className='text-sm mb-2'>
+                <label
+                  htmlFor='password'
+                  className='text-sm mb-2'
+                >
                   Password
                 </label>
               </div>
@@ -87,7 +93,7 @@ const Login = () => {
         </p>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
