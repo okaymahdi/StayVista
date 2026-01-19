@@ -1,31 +1,56 @@
-import { useEffect, useState } from 'react'
-import Card from './Card'
-import Container from '../Shared/Container'
-import Heading from '../Shared/Heading'
-import LoadingSpinner from '../Shared/LoadingSpinner'
+import { useQuery } from '@tanstack/react-query';
+import useAxiosSecure from '../../hooks/useAxiosSecure';
+import Container from '../Shared/Container';
+import Heading from '../Shared/Heading';
+import LoadingSpinner from '../Shared/LoadingSpinner';
+import Card from './Card';
 
 const Rooms = () => {
-  const [rooms, setRooms] = useState([])
-  const [loading, setLoading] = useState(false)
+  // const [rooms, setRooms] = useState([]);
+  // const [loading, setLoading] = useState(false);
+  const axiosSecure = useAxiosSecure();
 
-  useEffect(() => {
-    setLoading(true)
-    fetch(`./rooms.json`)
-      .then(res => res.json())
-      .then(data => {
-        setRooms(data)
-        setLoading(false)
-      })
-  }, [])
+  /** Fetch Data From Server with Tanstack */
+  const { data: rooms = [], isLoading } = useQuery({
+    queryKey: ['rooms'],
+    queryFn: async () => {
+      const { data } = await axiosSecure.get('/rooms');
+      console.log(data);
+      return data;
+    },
+  });
 
-  if (loading) return <LoadingSpinner />
+  // useEffect(() => {
+  //   setLoading(true);
+  //   fetch(`./rooms.json`)
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       setRooms(data);
+  //       setLoading(false);
+  //     });
+  // }, []);
+
+  // useEffect(() => {
+  //   setLoading(true);
+  //   fetch(`${import.meta.env.VITE_API_URL}/rooms`)
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       setRooms(data);
+  //       setLoading(false);
+  //     });
+  // }, []);
+
+  if (isLoading) return <LoadingSpinner />;
 
   return (
     <Container>
       {rooms && rooms.length > 0 ? (
         <div className='pt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-8'>
-          {rooms.map(room => (
-            <Card key={room._id} room={room} />
+          {rooms.map((room) => (
+            <Card
+              key={room._id}
+              room={room}
+            />
           ))}
         </div>
       ) : (
@@ -38,7 +63,7 @@ const Rooms = () => {
         </div>
       )}
     </Container>
-  )
-}
+  );
+};
 
-export default Rooms
+export default Rooms;

@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
 
 const CategoryBox = ({ label, icon: Icon }) => {
   return (
@@ -17,12 +17,12 @@ const CategoryBox = ({ label, icon: Icon }) => {
       <Icon size={26} />
       <div className='text-sm font-medium'>{label}</div>
     </div>
-  )
-}
+  );
+};
 
 CategoryBox.propTypes = {
   label: PropTypes.string,
   icon: PropTypes.elementType,
-}
+};
 
-export default CategoryBox
+export default CategoryBox;

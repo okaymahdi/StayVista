@@ -1,5 +1,5 @@
-import { Link } from 'react-router';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router';
 
 const Card = ({ room }) => {
   return (

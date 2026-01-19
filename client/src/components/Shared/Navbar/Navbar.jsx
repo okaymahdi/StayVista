@@ -1,9 +1,9 @@
-import Container from '../Container';
-import { AiOutlineMenu } from 'react-icons/ai';
 import { useState } from 'react';
+import { AiOutlineMenu } from 'react-icons/ai';
 import { Link } from 'react-router';
-import useAuth from '../../../hooks/useAuth';
 import avatarImg from '../../../assets/images/placeholder.jpg';
+import useAuth from '../../../hooks/useAuth';
+import Container from '../Container';
 
 const Navbar = () => {
   const { user, logOut } = useAuth();
@@ -11,7 +11,7 @@ const Navbar = () => {
 
   return (
     <div className='fixed w-full bg-white z-10 shadow-sm'>
-      <div className='py-4 border-b-[1px]'>
+      <div className='py-4 border-b'>
         <Container>
           <div className='flex flex-row  items-center justify-between gap-3 md:gap-0'>
             {/* Logo */}
@@ -41,7 +41,7 @@ const Navbar = () => {
                 {/* Dropdown btn */}
                 <div
                   onClick={() => setIsOpen(!isOpen)}
-                  className='p-4 md:py-1 md:px-2 border-[1px] border-neutral-200 flex flex-row items-center gap-3 rounded-full cursor-pointer hover:shadow-md transition'
+                  className='p-4 md:py-1 md:px-2 border border-neutral-200 flex flex-row items-center gap-3 rounded-full cursor-pointer hover:shadow-md transition'
                 >
                   <AiOutlineMenu />
                   <div className='hidden md:block'>

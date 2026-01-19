@@ -1,11 +1,11 @@
 import { createBrowserRouter } from 'react-router';
 import Main from '../layouts/Main';
-import Home from '../pages/Home/Home';
 import ErrorPage from '../pages/ErrorPage';
+import Home from '../pages/Home/Home';
 import Login from '../pages/Login/Login';
-import SignUp from '../pages/SignUp/SignUp';
 import RoomDetails from '../pages/RoomDetails/RoomDetails';
-import { Component } from 'react';
+import SignUp from '../pages/SignUp/SignUp';
+
 import { RouterProvider } from 'react-router';
 
 export const router = createBrowserRouter([

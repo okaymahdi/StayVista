@@ -1,5 +1,5 @@
-import { Link } from 'react-router';
 import { FcGoogle } from 'react-icons/fc';
+import { Link } from 'react-router';
 
 const SignUp = () => {
   return (

@@ -1,7 +1,7 @@
-import Container from '../../components/Shared/Container'
-import { Helmet } from 'react-helmet-async'
-import RoomReservation from '../../components/RoomDetails/RoomReservation'
-import Heading from '../../components/Shared/Heading'
+import { Helmet } from 'react-helmet-async';
+import RoomReservation from '../../components/RoomDetails/RoomReservation';
+import Container from '../../components/Shared/Container';
+import Heading from '../../components/Shared/Heading';
 
 // single room object (Fake Data)
 const room = {
@@ -23,7 +23,7 @@ const room = {
   description:
     'Seamlessly evisculate frictionless e-markets through tactical interfaces. Holisticly visualize viral potentialities without mission-critical services.',
   image: 'https://i.ibb.co/BsLQWH6/992ceffe-86d2-42b0-93b8-c24427806cca.webp',
-}
+};
 const RoomDetails = () => {
   return (
     <Container>
@@ -31,11 +31,14 @@ const RoomDetails = () => {
         <title>{room?.title}</title>
       </Helmet>
       {room && (
-        <div className='max-w-screen-lg mx-auto'>
+        <div className='max-w-5xl mx-auto'>
           {/* Header */}
           <div className='flex flex-col gap-6'>
             <div>
-              <Heading title={room.title} subtitle={room.location} />
+              <Heading
+                title={room.title}
+                subtitle={room.location}
+              />
               <div className='w-full md:h-[60vh] overflow-hidden rounded-xl'>
                 <img
                   className='object-cover w-full'
@@ -103,7 +106,7 @@ const RoomDetails = () => {
         </div>
       )}
     </Container>
-  )
-}
+  );
+};
 
-export default RoomDetails
+export default RoomDetails;
