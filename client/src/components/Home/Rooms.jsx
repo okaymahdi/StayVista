@@ -4,17 +4,18 @@ import Container from '../Shared/Container';
 import Heading from '../Shared/Heading';
 import LoadingSpinner from '../Shared/LoadingSpinner';
 import Card from './Card';
+import useAxiosCommon from '../../hooks/useAxiosCommon';
 
 const Rooms = () => {
   // const [rooms, setRooms] = useState([]);
   // const [loading, setLoading] = useState(false);
-  const axiosSecure = useAxiosSecure();
+  const axiosCommon = useAxiosCommon();
 
   /** Fetch Data From Server with Tanstack */
   const { data: rooms = [], isLoading } = useQuery({
     queryKey: ['rooms'],
     queryFn: async () => {
-      const { data } = await axiosSecure.get('/rooms');
+      const { data } = await axiosCommon.get('/rooms');
       console.log(data);
       return data;
     },
