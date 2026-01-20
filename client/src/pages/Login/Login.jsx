@@ -1,7 +1,72 @@
+import toast from 'react-hot-toast';
 import { FcGoogle } from 'react-icons/fc';
-import { Link } from 'react-router';
+import { FiLogIn } from 'react-icons/fi';
+import { TbFidgetSpinner } from 'react-icons/tb';
+import { Link, useNavigate } from 'react-router';
+import useAuth from '../../hooks/useAuth';
+import { useState } from 'react';
 
 const Login = () => {
+  const navigate = useNavigate();
+  const { signIn, signInWithGoogle, resetPassword, loading, setLoading } =
+    useAuth();
+  const [email, setEmail] = useState('');
+
+  /** Handle Login */
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const email = form.email.value;
+    setEmail(email);
+    const password = form.password.value;
+
+    try {
+      setLoading(true);
+      await signIn(email, password);
+      toast.success('Signed in successfully');
+      navigate('/');
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /** Google Login */
+  const handleGoogleSignIn = () => {
+    try {
+      setLoading(true);
+      signInWithGoogle();
+      toast.success('Signed in with Google');
+      navigate('/');
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /** Handle Reset Password */
+  const handleResetPassword = async () => {
+    console.log(email);
+    if (!email) {
+      toast.error('Please enter your email');
+      return;
+    }
+    try {
+      setLoading(true);
+      await resetPassword(email);
+      toast.success('Password reset link sent to your email');
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className='flex justify-center items-center min-h-screen'>
       <div className='flex flex-col max-w-md p-6 rounded-md sm:p-10 bg-gray-100 text-gray-900'>
@@ -12,6 +77,7 @@ const Login = () => {
           </p>
         </div>
         <form
+          onSubmit={handleLogin}
           noValidate=''
           action=''
           className='space-y-6 ng-untouched ng-pristine ng-valid'
@@ -28,6 +94,7 @@ const Login = () => {
                 type='email'
                 name='email'
                 id='email'
+                onBlur={(e) => setEmail(e.target.value)}
                 required
                 placeholder='Enter Your Email Here'
                 className='w-full px-3 py-2 border rounded-md border-gray-300 focus:outline-rose-500 bg-gray-200 text-gray-900'
@@ -58,14 +125,28 @@ const Login = () => {
           <div>
             <button
               type='submit'
-              className='bg-rose-500 w-full rounded-md py-3 text-white'
+              disabled={loading}
+              className='bg-rose-500 w-full rounded-md py-3 text-white cursor-pointer disabled:cursor-not-allowed'
             >
-              Continue
+              {loading ? (
+                <span className='flex items-center justify-center gap-2'>
+                  <TbFidgetSpinner className='h-4 w-4 text-white animate-spin' />
+                  Signing In...
+                </span>
+              ) : (
+                <span className='flex items-center justify-center gap-2'>
+                  <FiLogIn className='h-4 w-4' />
+                  Continue
+                </span>
+              )}
             </button>
           </div>
         </form>
         <div className='space-y-1'>
-          <button className='text-xs hover:underline hover:text-rose-500 text-gray-400'>
+          <button
+            onClick={handleResetPassword}
+            className='text-xs hover:underline hover:text-rose-500 text-gray-400'
+          >
             Forgot password?
           </button>
         </div>
@@ -76,11 +157,15 @@ const Login = () => {
           </p>
           <div className='flex-1 h-px sm:w-16 dark:bg-gray-700'></div>
         </div>
-        <div className='flex justify-center items-center space-x-2 border m-3 p-2 border-gray-300 border-rounded cursor-pointer'>
+        <button
+          onClick={handleGoogleSignIn}
+          disabled={loading}
+          className='flex justify-center items-center space-x-2 border m-3 p-2 border-gray-300 border-rounded cursor-pointer'
+        >
           <FcGoogle size={32} />
 
           <p>Continue with Google</p>
-        </div>
+        </button>
         <p className='px-6 text-sm text-center text-gray-400'>
           Don&apos;t have an account yet?{' '}
           <Link

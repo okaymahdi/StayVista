@@ -172,7 +172,7 @@ const SignUp = () => {
               ) : (
                 <span className='flex items-center justify-center gap-2'>
                   <FiUserPlus className='h-4 w-4' />
-                  Register
+                  Continue
                 </span>
               )}
             </button>
