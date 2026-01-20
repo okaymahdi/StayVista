@@ -10,17 +10,18 @@ const Rooms = () => {
   // const [rooms, setRooms] = useState([]);
   // const [loading, setLoading] = useState(false);
   const axiosCommon = useAxiosCommon();
-  const [prams, setPrams] = useSearchParams();
+  const [params] = useSearchParams();
 
-  const category = prams.get('category');
-  console.log(category);
+  const category = params.get('category');
+  // console.log(category);
 
   /** Fetch Data From Server with Tanstack */
   const { data: rooms = [], isLoading } = useQuery({
     queryKey: ['rooms', category],
     queryFn: async () => {
-      const { data } = await axiosCommon.get(`/rooms?category=${category}`);
-      // console.log(data);
+      const url = category ? `/rooms?category=${category}` : '/rooms';
+
+      const { data } = await axiosCommon.get(url);
       return data;
     },
   });

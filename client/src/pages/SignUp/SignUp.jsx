@@ -1,7 +1,80 @@
+import axios from 'axios';
+import toast from 'react-hot-toast';
 import { FcGoogle } from 'react-icons/fc';
-import { Link } from 'react-router';
+import { FiUserPlus } from 'react-icons/fi';
+import { TbFidgetSpinner } from 'react-icons/tb';
+import { Link, useNavigate } from 'react-router';
+import useAuth from '../../hooks/useAuth';
 
 const SignUp = () => {
+  const navigate = useNavigate();
+  const {
+    createUser,
+    signInWithGoogle,
+    updateUserProfile,
+    loading,
+    setLoading,
+  } = useAuth();
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const name = form.name.value;
+    const email = form.email.value;
+    const password = form.password.value;
+    const image = form.image.files[0];
+    if (!image) {
+      toast.error('Please select an image');
+      return;
+    }
+
+    console.log(name, email, password, image);
+
+    try {
+      setLoading(true);
+      /** 1. Upload image & get image url */
+      const formData = new FormData();
+      formData.append('image', image);
+      const { data } = await axios.post(
+        `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMGBB_API_KEY}`,
+        formData,
+      );
+      console.log(data);
+
+      /** 2. Create user */
+      await createUser(email, password);
+
+      /** 3. Save UserName & Photo in Firebase */
+      await updateUserProfile(name, data.data.display_url);
+
+      navigate('/');
+      toast.success('User Created Successfully');
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /** Google Sign Up */
+  const handleGoogleSignUp = async () => {
+    try {
+      setLoading(true);
+      await signInWithGoogle();
+      navigate('/');
+      toast.success('Signed in with Google');
+    } catch (error) {
+      if (error.code === 'auth/popup-closed-by-user') {
+        toast.error('Google sign-in popup was closed before completing.');
+      } else {
+        console.error(error);
+        toast.error(error.message);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className='flex justify-center items-center min-h-screen'>
       <div className='flex flex-col max-w-md p-6 rounded-md sm:p-10 bg-gray-100 text-gray-900'>
@@ -10,6 +83,7 @@ const SignUp = () => {
           <p className='text-sm text-gray-400'>Welcome to StayVista</p>
         </div>
         <form
+          onSubmit={handleSignUp}
           noValidate=''
           action=''
           className='space-y-6 ng-untouched ng-pristine ng-valid'
@@ -87,9 +161,20 @@ const SignUp = () => {
           <div>
             <button
               type='submit'
-              className='bg-rose-500 w-full rounded-md py-3 text-white'
+              disabled={loading}
+              className='bg-rose-500 w-full rounded-md py-3 text-white cursor-pointer disabled:cursor-not-allowed'
             >
-              Continue
+              {loading ? (
+                <span className='flex items-center justify-center gap-2'>
+                  <TbFidgetSpinner className='h-4 w-4 text-white animate-spin' />
+                  Signing Up...
+                </span>
+              ) : (
+                <span className='flex items-center justify-center gap-2'>
+                  <FiUserPlus className='h-4 w-4' />
+                  Register
+                </span>
+              )}
             </button>
           </div>
         </form>
@@ -100,11 +185,14 @@ const SignUp = () => {
           </p>
           <div className='flex-1 h-px sm:w-16 dark:bg-gray-700'></div>
         </div>
-        <div className='flex justify-center items-center space-x-2 border m-3 p-2 border-gray-300 border-rounded cursor-pointer'>
+        <button
+          onClick={!loading ? handleGoogleSignUp : undefined}
+          className='flex justify-center items-center space-x-2 border m-3 p-2 border-gray-300 border-rounded cursor-pointer'
+        >
           <FcGoogle size={32} />
 
           <p>Continue with Google</p>
-        </div>
+        </button>
         <p className='px-6 text-sm text-center text-gray-400'>
           Already have an account?{' '}
           <Link

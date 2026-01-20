@@ -3,12 +3,15 @@ import queryString from 'query-string';
 import { useNavigate, useSearchParams } from 'react-router';
 
 const CategoryBox = ({ label, icon: Icon }) => {
-  const [prams, setParams] = useSearchParams();
-  const category = prams.get('category');
+  const [params] = useSearchParams();
+  const category = params.get('category');
   // console.log(category === label);
   const navigate = useNavigate();
   const handleClick = () => {
-    let currentQuery = { category: label };
+    let currentQuery = {};
+    if (category !== label) {
+      currentQuery.category = label;
+    }
     const url = queryString.stringifyUrl(
       {
         url: window.location.href,
@@ -18,7 +21,7 @@ const CategoryBox = ({ label, icon: Icon }) => {
       { skipNull: true },
     );
     navigate(url);
-    console.log(url);
+    // console.log(url);
   };
   return (
     <div
@@ -36,7 +39,7 @@ const CategoryBox = ({ label, icon: Icon }) => {
   ${category === label ? 'text-rose-500' : 'text-neutral-500'}
   `}
     >
-      <Icon size={26} />
+      {Icon && <Icon size={26} />}
       <div className='text-sm font-medium'>{label}</div>
     </div>
   );
