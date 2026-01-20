@@ -1,10 +1,10 @@
+import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { FcGoogle } from 'react-icons/fc';
 import { FiLogIn } from 'react-icons/fi';
 import { TbFidgetSpinner } from 'react-icons/tb';
 import { Link, useNavigate } from 'react-router';
 import useAuth from '../../hooks/useAuth';
-import { useState } from 'react';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -50,18 +50,34 @@ const Login = () => {
 
   /** Handle Reset Password */
   const handleResetPassword = async () => {
-    console.log(email);
+    console.log('Reset email:', email);
+
     if (!email) {
-      toast.error('Please enter your email');
+      toast.error('Please Write Your Email First!');
       return;
     }
+
+    if (!navigator.onLine) {
+      toast.error('No internet connection');
+      return;
+    }
+
     try {
       setLoading(true);
       await resetPassword(email);
-      toast.success('Password reset link sent to your email');
+      toast.success(
+        'Request Success! Please Check Your Email for Further Process...',
+      );
     } catch (error) {
-      console.log(error);
-      toast.error(error.message);
+      console.error(error);
+
+      if (error.code === 'auth/network-request-failed') {
+        toast.error('Network error. Please try again later.');
+      } else if (error.code === 'auth/user-not-found') {
+        toast.error('No account found with this email.');
+      } else {
+        toast.error(error.message);
+      }
     } finally {
       setLoading(false);
     }
