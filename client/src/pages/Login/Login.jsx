@@ -3,11 +3,13 @@ import toast from 'react-hot-toast';
 import { FcGoogle } from 'react-icons/fc';
 import { FiLogIn } from 'react-icons/fi';
 import { TbFidgetSpinner } from 'react-icons/tb';
-import { Link, useNavigate } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 import useAuth from '../../hooks/useAuth';
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || '/';
   const { signIn, signInWithGoogle, resetPassword, loading, setLoading } =
     useAuth();
   const [email, setEmail] = useState('');
@@ -24,7 +26,7 @@ const Login = () => {
       setLoading(true);
       await signIn(email, password);
       toast.success('Signed in successfully');
-      navigate('/');
+      navigate(from);
     } catch (error) {
       console.log(error);
       toast.error(error.message);
@@ -34,12 +36,12 @@ const Login = () => {
   };
 
   /** Google Login */
-  const handleGoogleSignIn = () => {
+  const handleGoogleSignIn = async () => {
     try {
       setLoading(true);
-      signInWithGoogle();
+      await signInWithGoogle();
       toast.success('Signed in with Google');
-      navigate('/');
+      navigate(from);
     } catch (error) {
       console.log(error);
       toast.error(error.message);

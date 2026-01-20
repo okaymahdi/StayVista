@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router';
 import LoadingSpinner from '../components/Shared/LoadingSpinner';
 import useAuth from '../hooks/useAuth';
 
@@ -12,8 +12,8 @@ const PrivateRoute = ({ children }) => {
   return (
     <Navigate
       to='/login'
-      state={location.pathname}
-      replace='true'
+      state={{ from: location }}
+      replace={true}
     />
   );
 };

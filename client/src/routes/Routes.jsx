@@ -7,8 +7,9 @@ import RoomDetails from '../pages/RoomDetails/RoomDetails';
 import SignUp from '../pages/SignUp/SignUp';
 
 import { RouterProvider } from 'react-router';
+import PrivateRoute from './PrivateRoute';
 
-export const router = createBrowserRouter([
+const Router = createBrowserRouter([
   {
     path: '/',
     Component: Main,
@@ -20,7 +21,11 @@ export const router = createBrowserRouter([
       },
       {
         path: '/room/:id',
-        Component: RoomDetails,
+        element: (
+          <PrivateRoute>
+            <RoomDetails />
+          </PrivateRoute>
+        ),
       },
     ],
   },
@@ -31,7 +36,7 @@ export const router = createBrowserRouter([
 const AppRouter = () => {
   return (
     <div>
-      <RouterProvider router={router} />
+      <RouterProvider router={Router} />
     </div>
   );
 };
