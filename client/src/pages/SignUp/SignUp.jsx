@@ -1,9 +1,9 @@
-import axios from 'axios';
 import toast from 'react-hot-toast';
 import { FcGoogle } from 'react-icons/fc';
 import { FiUserPlus } from 'react-icons/fi';
 import { TbFidgetSpinner } from 'react-icons/tb';
 import { Link, useNavigate } from 'react-router';
+import { imageUpload } from '../../Api/Utils/Index';
 import useAuth from '../../hooks/useAuth';
 
 const SignUp = () => {
@@ -32,19 +32,13 @@ const SignUp = () => {
     try {
       setLoading(true);
       /** 1. Upload image & get image url */
-      const formData = new FormData();
-      formData.append('image', image);
-      const { data } = await axios.post(
-        `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMGBB_API_KEY}`,
-        formData,
-      );
-      console.log(data);
+      const imageUrl = await imageUpload(image);
 
       /** 2. Create user */
       await createUser(email, password);
 
       /** 3. Save UserName & Photo in Firebase */
-      await updateUserProfile(name, data.data.display_url);
+      await updateUserProfile(name, imageUrl);
 
       navigate('/');
       toast.success('User Created Successfully');

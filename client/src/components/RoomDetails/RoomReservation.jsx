@@ -22,7 +22,7 @@ const RoomReservation = ({ room }) => {
         {/* Calender */}
         <DateRange
           showDateDisplay={false}
-          rangeColors={['#ff2056']}
+          rangeColors={['oklch(64.5% 0.246 16.439)']}
           editableDateInputs={true}
           onChange={(item) => setState([item.selection])}
           moveRangeOnFirstSelection={false}

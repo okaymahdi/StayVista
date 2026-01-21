@@ -111,5 +111,5 @@ app.get('/', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`StayVista is running on port ${port}`);
+  console.log(`StayVista is running on port http://localhost:${port}`);
 });

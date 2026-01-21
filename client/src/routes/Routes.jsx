@@ -7,13 +7,17 @@ import RoomDetails from '../pages/RoomDetails/RoomDetails';
 import SignUp from '../pages/SignUp/SignUp';
 
 import { RouterProvider } from 'react-router';
+import DashboardLayout from '../layouts/DashboardLayout';
+import Statistics from '../pages/Dashboard/Common/Statistics';
+import AddRoom from '../pages/Dashboard/Host/AddRoom';
+import MyListings from '../pages/Dashboard/Host/MyListings';
 import PrivateRoute from './PrivateRoute';
 
 const Router = createBrowserRouter([
   {
     path: '/',
     Component: Main,
-    errorElement: <ErrorPage />,
+    ErrorBoundary: ErrorPage,
     children: [
       {
         index: true,
@@ -21,16 +25,43 @@ const Router = createBrowserRouter([
       },
       {
         path: '/room/:id',
-        element: (
-          <PrivateRoute>
-            <RoomDetails />
-          </PrivateRoute>
-        ),
+        Component: PrivateRoute,
+        children: [
+          {
+            index: true,
+            Component: RoomDetails,
+          },
+        ],
       },
     ],
   },
-  { path: '/login', Component: Login },
-  { path: '/signup', Component: SignUp },
+  {
+    path: '/login',
+    Component: Login,
+  },
+  {
+    path: '/signup',
+    Component: SignUp,
+  },
+  {
+    path: '/dashboard',
+    Component: DashboardLayout,
+    ErrorBoundary: ErrorPage,
+    children: [
+      {
+        index: true,
+        Component: Statistics,
+      },
+      {
+        path: 'add-room',
+        Component: AddRoom,
+      },
+      {
+        path: 'my-listings',
+        Component: MyListings,
+      },
+    ],
+  },
 ]);
 
 const AppRouter = () => {

@@ -69,12 +69,19 @@ const Navbar = () => {
 
                     {user ? (
                       <>
-                        <div
+                        <Link
+                          to='/dashboard'
+                          className='px-4 py-3 hover:bg-neutral-100 transition font-semibold text-center'
+                        >
+                          Dashboard
+                        </Link>
+                        <button
+                          type='button'
                           onClick={logOut}
                           className='px-4 py-3 hover:bg-neutral-100 transition font-semibold cursor-pointer'
                         >
                           Logout
-                        </div>
+                        </button>
                       </>
                     ) : (
                       <>
