@@ -47,7 +47,7 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    const roomCollection = client.db('StayVista').collection('rooms');
+    const roomsCollection = client.db('StayVista').collection('rooms');
     // auth related api
     app.post('/jwt', async (req, res) => {
       const user = req.body;
@@ -84,14 +84,14 @@ async function run() {
       const category = req.query.category;
       let query = {};
       if (category && category !== 'null') query = { category };
-      const result = await roomCollection.find(query).toArray();
+      const result = await roomsCollection.find(query).toArray();
       res.send(result);
     });
 
     // Save a Room Data
     app.post('/room', async (req, res) => {
       const roomData = req.body;
-      const result = await roomCollection.insertOne(roomData);
+      const result = await roomsCollection.insertOne(roomData);
       res.send(result);
     });
 
@@ -99,7 +99,35 @@ async function run() {
     app.get('/room/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
-      const result = await roomCollection.findOne(query);
+      const result = await roomsCollection.findOne(query);
+      res.send(result);
+    });
+
+    /** My Listings Route */
+    app.get('/my-listings/:email', async (req, res) => {
+      try {
+        const { email } = req.params;
+
+        if (!email || email === 'undefined') {
+          return res.status(400).send({ message: 'Email is required' });
+        }
+
+        let query = { 'host.email': email };
+        const result = await roomsCollection.find(query).toArray();
+
+        res.send(result);
+      } catch (error) {
+        console.error('MY LISTINGS ERROR:', error);
+        res.status(500).send({ message: 'Internal server error' });
+      }
+    });
+
+    /** Delete Room Route */
+    app.delete('/room/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await roomsCollection.deleteOne(query);
+      console.log(result);
       res.send(result);
     });
 
