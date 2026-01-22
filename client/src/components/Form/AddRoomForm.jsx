@@ -1,6 +1,7 @@
 import { DateRange } from 'react-date-range';
 import { TbFidgetSpinner } from 'react-icons/tb';
 import { categories } from '../Categories/CategoriesData';
+import { CiSaveUp2 } from 'react-icons/ci';
 const AddRoomForm = ({
   dates,
   handleDates,
@@ -64,7 +65,6 @@ const AddRoomForm = ({
               </label>
               {/* Calender */}
               <DateRange
-                showDateDisplay={false}
                 rangeColors={['oklch(64.5% 0.246 16.439)']}
                 editableDateInputs={true}
                 onChange={(range) => {
@@ -110,10 +110,16 @@ const AddRoomForm = ({
                     <div className='bg-rose-500 text-white border border-gray-300 rounded font-semibold cursor-pointer p-1 px-3 hover:bg-rose-600'>
                       {/* {imageText} */}
                       <span>
-                        {imageText.length > 20
-                          ? imageText.split('.')[0].slice(0, 15) +
-                            '...' +
-                            imageText.split('.')[1]
+                        {imageText
+                          ? (() => {
+                              const lastDot = imageText.lastIndexOf('.');
+                              if (imageText.length > 20 && lastDot !== -1) {
+                                const name = imageText.slice(0, 15);
+                                const ext = imageText.slice(lastDot);
+                                return name + '...' + ext;
+                              }
+                              return imageText;
+                            })()
                           : 'Upload Image'}
                       </span>
                     </div>
@@ -221,9 +227,15 @@ const AddRoomForm = ({
           className='w-full cursor-pointer p-3 mt-5 text-center font-medium text-white transition duration-200 rounded shadow-md bg-rose-500'
         >
           {loading ? (
-            <TbFidgetSpinner className='animate-spin m-auto' />
+            <span className='flex items-center justify-center gap-2'>
+              <TbFidgetSpinner className='h-4 w-4 text-white animate-spin' />
+              Save In...
+            </span>
           ) : (
-            ' Save & Continue'
+            <span className='flex items-center justify-center gap-2'>
+              <CiSaveUp2 className='h-6 w-6 text-white' />
+              Save & Continue
+            </span>
           )}
         </button>
       </form>

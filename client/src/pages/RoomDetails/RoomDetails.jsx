@@ -59,7 +59,7 @@ const RoomDetails = () => {
                 title={room.title}
                 subtitle={room.location}
               />
-              <div className='w-full md:h-[60vh] overflow-hidden rounded-xl'>
+              <div className='w-full md:h-dvh overflow-hidden rounded-xl'>
                 <img
                   className='object-cover w-full'
                   src={room.image}

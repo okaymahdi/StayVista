@@ -68,8 +68,9 @@ async function run() {
         res
           .clearCookie('token', {
             maxAge: 0,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+            secure: process.env.NODE_ENV === 'development',
+            sameSite:
+              process.env.NODE_ENV === 'development' ? 'none' : 'strict',
           })
           .send({ success: true });
         console.log('Logout successful');
@@ -84,6 +85,13 @@ async function run() {
       let query = {};
       if (category && category !== 'null') query = { category };
       const result = await roomCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    // Save a Room Data
+    app.post('/room', async (req, res) => {
+      const roomData = req.body;
+      const result = await roomCollection.insertOne(roomData);
       res.send(result);
     });
 
