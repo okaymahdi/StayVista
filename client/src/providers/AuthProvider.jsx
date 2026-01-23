@@ -73,7 +73,7 @@ const AuthProvider = ({ children }) => {
       status: 'verified',
     };
     const data = await axios.put(
-      `${import.meta.env.VITE_API_URL}/user/`,
+      `${import.meta.env.VITE_API_URL}/user`,
       currentUser,
     );
     return data;

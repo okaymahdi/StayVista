@@ -1,17 +1,25 @@
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
 import {
   Dialog,
   Transition,
   TransitionChild,
   DialogTitle,
   DialogPanel,
-} from '@headlessui/react'
-import { Fragment } from 'react'
+} from '@headlessui/react';
+import { Fragment } from 'react';
 
-const HostModal = ({ closeModal, isOpen, modalHandler }) => {
+const HostRequestModal = ({ closeModal, isOpen, modalHandler }) => {
   return (
-    <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as='div' className='relative z-10' onClose={closeModal}>
+    <Transition
+      appear
+      show={isOpen}
+      as={Fragment}
+    >
+      <Dialog
+        as='div'
+        className='relative z-10'
+        onClose={closeModal}
+      >
         <TransitionChild
           as={Fragment}
           enter='ease-out duration-300'
@@ -71,13 +79,13 @@ const HostModal = ({ closeModal, isOpen, modalHandler }) => {
         </div>
       </Dialog>
     </Transition>
-  )
-}
+  );
+};
 
-HostModal.propTypes = {
+HostRequestModal.propTypes = {
   closeModal: PropTypes.func,
   isOpen: PropTypes.bool,
   modalHandler: PropTypes.func,
-}
+};
 
-export default HostModal
+export default HostRequestModal;

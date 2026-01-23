@@ -1,13 +1,51 @@
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { AiOutlineMenu } from 'react-icons/ai';
 import { Link } from 'react-router';
 import avatarImg from '../../../assets/images/placeholder.jpg';
 import useAuth from '../../../hooks/useAuth';
+import useAxiosSecure from '../../../hooks/useAxiosSecure';
+import HostRequestModal from '../../Modal/HostRequestModal';
 import Container from '../Container';
 
 const Navbar = () => {
+  // const axiosSecure = useAxiosSecure();
   const { user, logOut } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  /** Close Modal */
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  /** Modal Handler */
+  const handleModal = async () => {
+    console.log('Handle Modal');
+
+    try {
+      const currentUser = {
+        email: user.email,
+        roll: 'guest',
+        status: 'requested',
+      };
+      const data = await useAxiosSecure.put(`/user`, currentUser);
+      if (data.isModified > 0) {
+        toast.success(
+          'Request Sent Successfully! Please wait for Admin Confirmation.',
+        );
+      } else {
+        toast.success('Please! wait for Admin Approval');
+      }
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    } finally {
+      closeModal();
+    }
+  };
 
   return (
     <div className='fixed w-full bg-white z-10 shadow-sm'>
@@ -29,15 +67,22 @@ const Navbar = () => {
               <div className='flex flex-row items-center gap-3'>
                 {/* Become A Host btn */}
                 <div className='hidden md:block'>
-                  {!user && (
+                  {user && (
                     <button
                       disabled={!user}
+                      onClick={() => setIsModalOpen(true)}
                       className='disabled:cursor-not-allowed cursor-pointer hover:bg-neutral-100 py-3 px-4 text-sm font-semibold rounded-full  transition'
                     >
                       Host your home
                     </button>
                   )}
                 </div>
+                {/* Modal */}
+                <HostRequestModal
+                  isOpen={isModalOpen}
+                  closeModal={closeModal}
+                  modalHandler={handleModal}
+                />
                 {/* Dropdown btn */}
                 <div
                   onClick={() => setIsOpen(!isOpen)}
