@@ -87,7 +87,18 @@ async function run() {
 
       /** Check if user exists */
       const isExist = await usersCollection.findOne(query);
-      if (isExist) return res.send(isExist);
+      if (isExist) {
+        if (user?.status === 'Requested') {
+          const result = await usersCollection.updateOne(query, {
+            $set: {
+              status: user?.status,
+            },
+          });
+          res.send(result);
+        }
+      } else {
+        return res.send(isExist);
+      }
 
       /** Save user in DB for the first time */
       const options = { upsert: true };

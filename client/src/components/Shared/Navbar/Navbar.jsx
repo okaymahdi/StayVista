@@ -9,7 +9,7 @@ import HostRequestModal from '../../Modal/HostRequestModal';
 import Container from '../Container';
 
 const Navbar = () => {
-  // const axiosSecure = useAxiosSecure();
+  const axiosSecure = useAxiosSecure();
   const { user, logOut } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -28,9 +28,9 @@ const Navbar = () => {
       const currentUser = {
         email: user.email,
         roll: 'guest',
-        status: 'requested',
+        status: 'Requested',
       };
-      const data = await useAxiosSecure.put(`/user`, currentUser);
+      const data = await axiosSecure.put(`/user`, currentUser);
       if (data.isModified > 0) {
         toast.success(
           'Request Sent Successfully! Please wait for Admin Confirmation.',
