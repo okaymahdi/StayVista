@@ -1,11 +1,11 @@
-import PropTypes from 'prop-types';
 import {
   Dialog,
+  DialogPanel,
+  DialogTitle,
   Transition,
   TransitionChild,
-  DialogTitle,
-  DialogPanel,
 } from '@headlessui/react';
+import PropTypes from 'prop-types';
 import { Fragment } from 'react';
 
 const HostRequestModal = ({ closeModal, isOpen, modalHandler }) => {

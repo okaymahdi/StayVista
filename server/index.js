@@ -89,15 +89,17 @@ async function run() {
       const isExist = await usersCollection.findOne(query);
       if (isExist) {
         if (user?.status === 'Requested') {
+          /** if Existing User Try to Change his Role */
           const result = await usersCollection.updateOne(query, {
             $set: {
               status: user?.status,
             },
           });
           res.send(result);
+        } else {
+          /** if Existing User Login Again */
+          return res.send(isExist);
         }
-      } else {
-        return res.send(isExist);
       }
 
       /** Save user in DB for the first time */
@@ -105,10 +107,20 @@ async function run() {
       const updateDoc = {
         $set: {
           ...user,
-          timeStamp: Date.now(),
+          timeStamp: new Date().toLocaleString('en-BD', {
+            timeZone: 'Asia/Dhaka',
+          }),
         },
       };
       const result = await usersCollection.updateOne(query, updateDoc, options);
+      res.send(result);
+    });
+
+    /** Get a User Info by Email from DB */
+    app.get('/user/:email', async (req, res) => {
+      const email = req.params.email;
+      const query = { email };
+      const result = await usersCollection.findOne(query);
       res.send(result);
     });
 
