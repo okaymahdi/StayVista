@@ -48,6 +48,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     const roomsCollection = client.db('StayVista').collection('rooms');
+    const usersCollection = client.db('StayVista').collection('users');
     // auth related api
     app.post('/jwt', async (req, res) => {
       const user = req.body;
@@ -77,6 +78,21 @@ async function run() {
       } catch (err) {
         res.status(500).send(err);
       }
+    });
+
+    /** Save a User in DB */
+    app.put('/user', async (req, res) => {
+      const user = req.body;
+      const query = { email: user?.email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          ...user,
+          timeStamp: Date.now(),
+        },
+      };
+      const result = await usersCollection.updateOne(query, updateDoc, options);
+      res.send(result);
     });
 
     // Get all rooms
