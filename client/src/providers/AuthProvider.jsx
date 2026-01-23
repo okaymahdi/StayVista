@@ -65,12 +65,27 @@ const AuthProvider = ({ children }) => {
     return data;
   };
 
+  /** Save User to DB */
+  const saveUser = async (user) => {
+    const currentUser = {
+      email: user.email,
+      roll: 'guest',
+      status: 'verified',
+    };
+    const data = await axios.put(
+      `${import.meta.env.VITE_API_URL}/user/`,
+      currentUser,
+    );
+    return data;
+  };
+
   // onAuthStateChange
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
         getToken(currentUser.email);
+        saveUser(currentUser);
       }
       setLoading(false);
     });

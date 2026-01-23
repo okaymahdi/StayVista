@@ -84,6 +84,12 @@ async function run() {
     app.put('/user', async (req, res) => {
       const user = req.body;
       const query = { email: user?.email };
+
+      /** Check if user exists */
+      const isExist = await usersCollection.findOne(query);
+      if (isExist) return res.send(isExist);
+
+      /** Save user in DB for the first time */
       const options = { upsert: true };
       const updateDoc = {
         $set: {
@@ -92,6 +98,12 @@ async function run() {
         },
       };
       const result = await usersCollection.updateOne(query, updateDoc, options);
+      res.send(result);
+    });
+
+    /** Get All Users Data from DB */
+    app.get('/users', async (req, res) => {
+      const result = await usersCollection.find().toArray();
       res.send(result);
     });
 
