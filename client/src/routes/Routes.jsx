@@ -1,5 +1,4 @@
 import { createBrowserRouter } from 'react-router';
-import Main from '../layouts/Main';
 import ErrorPage from '../pages/ErrorPage';
 import Home from '../pages/Home/Home';
 import Login from '../pages/Login/Login';
@@ -12,11 +11,13 @@ import Statistics from '../pages/Dashboard/Common/Statistics';
 import AddRoom from '../pages/Dashboard/Host/AddRoom';
 import MyListings from '../pages/Dashboard/Host/MyListings';
 import PrivateRoute from './PrivateRoute';
+import Profile from '../pages/Dashboard/Common/Profile';
+import RootLayout from '../layouts/RootLayout';
 
 const Router = createBrowserRouter([
   {
     path: '/',
-    Component: Main,
+    Component: RootLayout,
     ErrorBoundary: ErrorPage,
     children: [
       {
@@ -59,6 +60,10 @@ const Router = createBrowserRouter([
       {
         path: 'my-listings',
         Component: MyListings,
+      },
+      {
+        path: 'profile',
+        Component: Profile,
       },
     ],
   },

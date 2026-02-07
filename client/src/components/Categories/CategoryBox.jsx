@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import queryString from 'query-string';
 import { useNavigate, useSearchParams } from 'react-router';
 
@@ -43,11 +42,6 @@ const CategoryBox = ({ label, icon: Icon }) => {
       <div className='text-sm font-medium'>{label}</div>
     </div>
   );
-};
-
-CategoryBox.propTypes = {
-  label: PropTypes.string,
-  icon: PropTypes.elementType,
 };
 
 export default CategoryBox;

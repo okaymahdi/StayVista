@@ -8,8 +8,10 @@ const Home = () => {
       <Helmet>
         <title>StayVista | Vacation Homes & Condo Rentals</title>
       </Helmet>
+
       {/* Categories section  */}
       <Categories />
+
       {/* Rooms section */}
       <Rooms />
     </div>

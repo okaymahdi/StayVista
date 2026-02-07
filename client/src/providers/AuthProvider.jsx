@@ -2,7 +2,6 @@ import axios from 'axios';
 import {
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
-  getAuth,
   onAuthStateChanged,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
@@ -12,9 +11,8 @@ import {
 } from 'firebase/auth';
 import PropTypes from 'prop-types';
 import { createContext, useEffect, useState } from 'react';
-import { app } from '../firebase/firebase.config';
+import { Auth } from '../firebase/firebase.config';
 const AuthContext = createContext(null);
-const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
 const AuthProvider = ({ children }) => {
@@ -23,22 +21,22 @@ const AuthProvider = ({ children }) => {
 
   const createUser = (email, password) => {
     setLoading(true);
-    return createUserWithEmailAndPassword(auth, email, password);
+    return createUserWithEmailAndPassword(Auth, email, password);
   };
 
   const signIn = (email, password) => {
     setLoading(true);
-    return signInWithEmailAndPassword(auth, email, password);
+    return signInWithEmailAndPassword(Auth, email, password);
   };
 
   const signInWithGoogle = () => {
     setLoading(true);
-    return signInWithPopup(auth, googleProvider);
+    return signInWithPopup(Auth, googleProvider);
   };
 
   const resetPassword = (email) => {
     setLoading(true);
-    return sendPasswordResetEmail(auth, email);
+    return sendPasswordResetEmail(Auth, email);
   };
 
   const logOut = async () => {
@@ -46,11 +44,11 @@ const AuthProvider = ({ children }) => {
     await axios.get(`${import.meta.env.VITE_API_URL}/logout`, {
       withCredentials: true,
     });
-    return signOut(auth);
+    return signOut(Auth);
   };
 
   const updateUserProfile = (name, photo) => {
-    return updateProfile(auth.currentUser, {
+    return updateProfile(Auth.currentUser, {
       displayName: name,
       photoURL: photo,
     });
@@ -81,7 +79,7 @@ const AuthProvider = ({ children }) => {
 
   // onAuthStateChange
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(Auth, (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
         getToken(currentUser.email);
@@ -94,7 +92,7 @@ const AuthProvider = ({ children }) => {
     };
   }, []);
 
-  const authInfo = {
+  const AuthInfo = {
     user,
     loading,
     setLoading,
@@ -107,7 +105,7 @@ const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={AuthInfo}>{children}</AuthContext.Provider>
   );
 };
 
