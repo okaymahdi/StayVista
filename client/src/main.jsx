@@ -10,9 +10,13 @@ import { AppRouter } from './routes/Routes';
 
 const queryClient = new QueryClient();
 ReactDOM.createRoot(document.getElementById('root')).render(
+  /** Helmet Provider */
   <HelmetProvider>
+    {/* tanstack query Provider */}
     <QueryClientProvider client={queryClient}>
+      {/* Auth Provider */}
       <AuthProvider>
+        {/* Root Router */}
         <AppRouter />
         <Toaster />
       </AuthProvider>

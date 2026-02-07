@@ -544,7 +544,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 );
 ```
 
-# 6. Get All Rooms From DB
+# 6. Get All Rooms From DB In [Server] Side
 
 - rooms.controller.js
 
@@ -579,20 +579,62 @@ module.exports = { roomsRouter };
 app.use('/', roomsRouter);
 ```
 
-# 7.
+# 7. Setup @tanstack/react-query In [Client] Side
 
 - main.jsx
 
 ```js
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import 'react-date-range/dist/styles.css';
+import 'react-date-range/dist/theme/default.css';
+import ReactDOM from 'react-dom/client';
+import { HelmetProvider } from 'react-helmet-async';
+import { Toaster } from 'react-hot-toast';
+import './index.css';
+import AuthProvider from './providers/AuthProvider';
+import { AppRouter } from './routes/Routes';
 
+const queryClient = new QueryClient();
+ReactDOM.createRoot(document.getElementById('root')).render(
+  /** Helmet Provider */
+  <HelmetProvider>
+    {/* tanstack query Provider */}
+    <QueryClientProvider client={queryClient}>
+      {/* Auth Provider */}
+      <AuthProvider>
+        {/* Root Router */}
+        <AppRouter />
+        <Toaster />
+      </AuthProvider>
+    </QueryClientProvider>
+  </HelmetProvider>,
+);
 ```
 
-# 8.
+# 8. Get All Rooms Show In [Client] Side with @tanstack/react-query
 
-- main.jsx
+- Rooms.jsx
 
 ```js
+import { useQuery } from '@tanstack/react-query';
+import useAxiosCommon from '../../hooks/useAxiosCommon';
+const axiosCommon = useAxiosCommon();
+const {
+  data: rooms = [],
+  isLoading,
+  isPending,
+  isError,
+} = useQuery({
+  queryKey: ['rooms', category],
+  queryFn: async () => {
+    const { data } = await axiosCommon.get('/rooms');
+    return data;
+  },
+});
 
+if (isLoading) return <LoadingSpinner />;
+if (isPending) return <LoadingSpinner />;
+if (isError) return <div>Error: {isError.message}</div>;
 ```
 
 # 9.

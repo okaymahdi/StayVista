@@ -15,8 +15,13 @@ const Rooms = () => {
   const category = params.get('category');
   // console.log(category);
 
-  /** Fetch Data From Server with Tanstack */
-  const { data: rooms = [], isLoading } = useQuery({
+  /** 8. Fetch Data From Server with Tanstack Query */
+  const {
+    data: rooms = [],
+    isLoading,
+    isPending,
+    isError,
+  } = useQuery({
     queryKey: ['rooms', category],
     queryFn: async () => {
       const url = category ? `/rooms?category=${category}` : '/rooms';
@@ -47,6 +52,8 @@ const Rooms = () => {
   // }, []);
 
   if (isLoading) return <LoadingSpinner />;
+  if (isPending) return <LoadingSpinner />;
+  if (isError) return <div>Error: {isError.message}</div>;
 
   return (
     <Container>
