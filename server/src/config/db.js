@@ -4,7 +4,7 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 /** MongoDB Connection URI */
 const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_CLUSTER_NAME}.gv00ql5.mongodb.net/${process.env.MONGO_DATABASE_NAME}?retryWrites=true&w=majority`;
 
-/** Mongo Client Setup */
+/** Mongo Client */
 const client = new MongoClient(MONGODB_URI, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -13,21 +13,24 @@ const client = new MongoClient(MONGODB_URI, {
   },
 });
 
-let db; // 🔑 store DB instance globally
+let db;
+let collections = {}; // 🔑 all collections here
 
-/** Database Connection Function */
+/** 🔗 Connect DB (only once) */
 const connectDB = async () => {
   try {
-    /** 🔗 Connect only once */
     if (!db) {
-      await client.connect(); // connect once
+      await client.connect();
 
       db = client.db(process.env.MONGO_DATABASE_NAME);
 
-      /** 🟢 Optional ping  */
+      /** 🧩 Register collections here */
+      collections.rooms = db.collection('rooms');
+      collections.users = db.collection('users');
+
+      /** 🟢 Ping check */
       await client.db('admin').command({ ping: 1 });
 
-      /** ✅ Successful Connection Logs */
       console.log(
         `\n🍃 ${chalk.green.bold('MongoDB')} Connected Successfully!`,
       );
@@ -37,9 +40,8 @@ const connectDB = async () => {
       );
     }
 
-    return db; // 🔑 important
+    return db;
   } catch (error) {
-    // ❌ Connection Failed Logs
     console.error(
       chalk.red.bold(`❌ MongoDB Connection Failed: ${error.message || error}`),
     );
@@ -47,9 +49,24 @@ const connectDB = async () => {
   }
 };
 
+/** 🔑 Get DB instance */
 const getDB = () => {
-  if (!db) throw new Error('Database not connected. Call connectDB() first.');
+  if (!db) {
+    throw new Error('Database not connected. Call connectDB() first.');
+  }
   return db;
 };
 
-module.exports = { connectDB, getDB };
+/** 📦 Get any collection safely */
+const getCollection = (name) => {
+  if (!collections[name]) {
+    throw new Error(`Collection "${name}" is not registered`);
+  }
+  return collections[name];
+};
+
+module.exports = {
+  connectDB,
+  getDB,
+  getCollection,
+};

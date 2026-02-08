@@ -1,19 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router';
-import useAxiosCommon from '../../hooks/useAxiosCommon';
+
 import Container from '../Shared/Container';
 import Heading from '../Shared/Heading';
 import LoadingSpinner from '../Shared/LoadingSpinner';
 import Card from './Card';
+import { AxiosCommon } from '../../Api/Axios/AxiosCommon';
 
 const Rooms = () => {
-  // const [rooms, setRooms] = useState([]);
-  // const [loading, setLoading] = useState(false);
-  const axiosCommon = useAxiosCommon();
+  const axiosCommon = AxiosCommon();
   const [params] = useSearchParams();
 
   const category = params.get('category');
-  // console.log(category);
 
   /** 8. Fetch Data From Server with Tanstack Query */
   const {

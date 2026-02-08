@@ -625,7 +625,7 @@ const {
   isPending,
   isError,
 } = useQuery({
-  queryKey: ['rooms', category],
+  queryKey: ['rooms'],
   queryFn: async () => {
     const { data } = await axiosCommon.get('/rooms');
     return data;
@@ -637,18 +637,66 @@ if (isPending) return <LoadingSpinner />;
 if (isError) return <div>Error: {isError.message}</div>;
 ```
 
-# 9.
+# 9. Get Single Room By Id In [Server] Side
 
-- main.jsx
+- rooms.controller.js
 
 ```js
-
+const getRoomByIdController = asyncHandler(async (req, res) => {
+  const roomsCollection = getCollection('rooms');
+  const roomId = req.params.id;
+  const query = { _id: new ObjectId(roomId) };
+  const room = await roomsCollection.findOne(query);
+  if (!room) {
+    return res.status(404).send({ message: 'Room not found' });
+  }
+  res.send(room);
+});
 ```
 
-# 10.
-
-- main.jsx
+- rooms.routes.js
 
 ```js
+roomsRouter.get('/room/:id', getRoomByIdController);
+```
 
+# 10. Get Single Room By Id In [Client] Side
+
+- RoomDetails.jsx
+
+```js
+const { id } = useParams();
+const axiosCommon = useAxiosCommon();
+
+/** 10. Fetch Data From Server with Tanstack */
+const {
+  data: room = {},
+  isLoading,
+  isPending,
+  isError,
+} = useQuery({
+  queryKey: ['room', id],
+  queryFn: async () => {
+    const { data } = await axiosCommon.get(`/room/${id}`);
+    return data;
+  },
+});
+
+if (isLoading || isPending) return <LoadingSpinner />;
+if (isError) return <div>Error: {isError.message}</div>;
+```
+
+- Routes.jsx
+
+```js
+  {
+    path: '/room/:id',
+    Component: PrivateRoute,
+    children: [
+      {
+        index: true,
+        Component: RoomDetails,
+      },
+    ],
+  },
 ```

@@ -5,7 +5,7 @@ import RoomReservation from '../../components/RoomDetails/RoomReservation';
 import Container from '../../components/Shared/Container';
 import Heading from '../../components/Shared/Heading';
 import LoadingSpinner from '../../components/Shared/LoadingSpinner';
-import useAxiosCommon from '../../hooks/useAxiosCommon';
+import { AxiosCommon } from '../../Api/Axios/AxiosCommon';
 
 // single room object (Fake Data)
 // const room = {
@@ -30,10 +30,15 @@ import useAxiosCommon from '../../hooks/useAxiosCommon';
 // };
 const RoomDetails = () => {
   const { id } = useParams();
-  const axiosCommon = useAxiosCommon();
+  const axiosCommon = AxiosCommon();
 
-  /** Fetch Data From Server with Tanstack */
-  const { data: room = {}, isLoading } = useQuery({
+  /** 10. Fetch Data From Server with Tanstack */
+  const {
+    data: room = {},
+    isLoading,
+    isPending,
+    isError,
+  } = useQuery({
     queryKey: ['room', id],
     queryFn: async () => {
       const { data } = await axiosCommon.get(`/room/${id}`);
@@ -41,7 +46,8 @@ const RoomDetails = () => {
     },
   });
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading || isPending) return <LoadingSpinner />;
+  if (isError) return <div>Error: {isError.message}</div>;
   return (
     <Container>
       <Helmet>

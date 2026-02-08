@@ -1,4 +1,5 @@
 require('dotenv').config();
+
 const { default: chalk } = require('chalk');
 const app = require('./app');
 const { connectDB } = require('./config/db');
