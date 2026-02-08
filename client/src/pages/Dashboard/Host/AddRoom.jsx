@@ -5,12 +5,12 @@ import toast from 'react-hot-toast';
 import { imageUpload } from '../../../Api/Utils/Index';
 import AddRoomForm from '../../../components/Form/AddRoomForm';
 import useAuth from '../../../hooks/useAuth';
-import useAxiosSecure from '../../../hooks/useAxiosSecure';
+import { AxiosSecure } from '../../../Api/Axios/AxiosSecure';
 import { useNavigate } from 'react-router';
 
 const AddRoom = () => {
   const navigate = useNavigate();
-  const axiosSecure = useAxiosSecure();
+  const axiosSecure = AxiosSecure();
   const { user } = useAuth();
   const [imagePreview, setImagePreview] = useState();
   const [imageText, setImageText] = useState('Upload Image');

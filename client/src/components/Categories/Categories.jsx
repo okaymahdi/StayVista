@@ -1,6 +1,8 @@
 import Container from '../Shared/Container';
 import { categories } from './CategoriesData.js';
 import CategoryBox from './CategoryBox';
+
+/** 14.3 Categories Parent Component */
 const Categories = () => {
   return (
     <Container>

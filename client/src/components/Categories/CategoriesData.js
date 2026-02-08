@@ -14,7 +14,8 @@ import { IoDiamond } from 'react-icons/io5';
 import { MdOutlineVilla } from 'react-icons/md';
 import { TbBeach, TbMountain, TbPool } from 'react-icons/tb';
 
-export const categories = [
+/** 14.2 Categories Data */
+const categories = [
   {
     label: 'Beach',
     icon: TbBeach,
@@ -91,3 +92,5 @@ export const categories = [
     description: 'This property is brand new and luxurious!',
   },
 ];
+
+export { categories };

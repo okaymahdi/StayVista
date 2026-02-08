@@ -5,10 +5,10 @@ const {
 } = require('../controllers/rooms.controller');
 const roomsRouter = express.Router();
 
-/** Get All Rooms Router */
+/** 6.2 Get All Rooms Router */
 roomsRouter.get('/rooms', getAllRoomsController);
 
-/** Get Room by ID Router */
+/** 11.2 Get Room by ID Router */
 roomsRouter.get('/room/:id', getRoomByIdController);
 
 module.exports = { roomsRouter };

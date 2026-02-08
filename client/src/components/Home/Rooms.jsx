@@ -9,8 +9,9 @@ import { AxiosCommon } from '../../Api/Axios/AxiosCommon';
 
 const Rooms = () => {
   const axiosCommon = AxiosCommon();
-  const [params] = useSearchParams();
 
+  /** 15.2 Query Set in Url */
+  const [params] = useSearchParams();
   const category = params.get('category');
 
   /** 8. Fetch Data From Server with Tanstack Query */
@@ -22,6 +23,7 @@ const Rooms = () => {
   } = useQuery({
     queryKey: ['rooms', category],
     queryFn: async () => {
+      /** Query String Set in Url */
       const url = category ? `/rooms?category=${category}` : '/rooms';
 
       const { data } = await axiosCommon.get(url);

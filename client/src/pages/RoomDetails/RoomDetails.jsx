@@ -5,6 +5,7 @@ import RoomReservation from '../../components/RoomDetails/RoomReservation';
 import Container from '../../components/Shared/Container';
 import Heading from '../../components/Shared/Heading';
 import LoadingSpinner from '../../components/Shared/LoadingSpinner';
+
 import { AxiosCommon } from '../../Api/Axios/AxiosCommon';
 
 // single room object (Fake Data)
@@ -32,7 +33,7 @@ const RoomDetails = () => {
   const { id } = useParams();
   const axiosCommon = AxiosCommon();
 
-  /** 10. Fetch Data From Server with Tanstack */
+  /** 12.1 Fetch Data From Server with Tanstack */
   const {
     data: room = {},
     isLoading,
@@ -41,6 +42,7 @@ const RoomDetails = () => {
   } = useQuery({
     queryKey: ['room', id],
     queryFn: async () => {
+      /** Single Room Fetching with Id */
       const { data } = await axiosCommon.get(`/room/${id}`);
       return data;
     },

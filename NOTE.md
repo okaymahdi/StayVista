@@ -44,8 +44,8 @@ import {
   getAuth,
   onAuthStateChanged,
   sendPasswordResetEmail,
-  signInWithEmailAndPassword,
-  signInWithPopup,
+  signinWithEmailAndPassword,
+  signinWithPopup,
   signOut,
   updateProfile,
 } from 'firebase/Auth';
@@ -64,14 +64,14 @@ const AuthProvider = ({ children }) => {
     return createUserWithEmailAndPassword(Auth, email, password);
   };
 
-  const signIn = (email, password) => {
+  const signin = (email, password) => {
     setLoading(true);
-    return signInWithEmailAndPassword(Auth, email, password);
+    return signinWithEmailAndPassword(Auth, email, password);
   };
 
-  const signInWithGoogle = () => {
+  const signinWithGoogle = () => {
     setLoading(true);
-    return signInWithPopup(Auth, googleProvider);
+    return signinWithPopup(Auth, googleProvider);
   };
 
   const resetPassword = (email) => {
@@ -132,20 +132,20 @@ const AuthProvider = ({ children }) => {
     };
   }, []);
 
-  const AuthInfo = {
+  const Authinfo = {
     user,
     loading,
     setLoading,
     createUser,
-    signIn,
-    signInWithGoogle,
+    signin,
+    signinWithGoogle,
     resetPassword,
     logOut,
     updateUserProfile,
   };
 
   return (
-    <AuthContext.Provider value={AuthInfo}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={Authinfo}>{children}</AuthContext.Provider>
   );
 };
 
@@ -158,7 +158,7 @@ export { AuthContext };
 export default AuthProvider;
 ```
 
-# 3. MongoDB Setup In [Server] Side
+# 3. MongoDB Setup in [Server] Side
 
 - .env
 
@@ -181,7 +181,7 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 /** MongoDB Connection URI */
 const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_CLUSTER_NAME}.gv00ql5.mongodb.net/${process.env.MONGO_DATABASE_NAME}?retryWrites=true&w=majority`;
 
-/** Mongo Client Setup */
+/** Mongo Client */
 const client = new MongoClient(MONGODB_URI, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -190,21 +190,24 @@ const client = new MongoClient(MONGODB_URI, {
   },
 });
 
-let db; // 🔑 store DB instance globally
+let db;
+let collections = {}; // 🔑 all collections here
 
-/** Database Connection Function */
+/** 🔗 Connect DB (only once) */
 const connectDB = async () => {
   try {
-    /** 🔗 Connect only once */
     if (!db) {
-      await client.connect(); // connect once
+      await client.connect();
 
       db = client.db(process.env.MONGO_DATABASE_NAME);
 
-      /** 🟢 Optional ping  */
+      /** 🧩 Register collections here */
+      collections.rooms = db.collection('rooms');
+      collections.users = db.collection('users');
+
+      /** 🟢 Ping check */
       await client.db('admin').command({ ping: 1 });
 
-      /** ✅ Successful Connection Logs */
       console.log(
         `\n🍃 ${chalk.green.bold('MongoDB')} Connected Successfully!`,
       );
@@ -214,9 +217,8 @@ const connectDB = async () => {
       );
     }
 
-    return db; // 🔑 important
+    return db;
   } catch (error) {
-    // ❌ Connection Failed Logs
     console.error(
       chalk.red.bold(`❌ MongoDB Connection Failed: ${error.message || error}`),
     );
@@ -224,12 +226,27 @@ const connectDB = async () => {
   }
 };
 
+/** 🔑 Get DB instance */
 const getDB = () => {
-  if (!db) throw new Error('Database not connected. Call connectDB() first.');
+  if (!db) {
+    throw new Error('Database not connected. Call connectDB() first.');
+  }
   return db;
 };
 
-module.exports = { connectDB, getDB };
+/** 📦 Get any collection safely */
+const getCollection = (name) => {
+  if (!collections[name]) {
+    throw new Error(`Collection "${name}" is not registered`);
+  }
+  return collections[name];
+};
+
+module.exports = {
+  connectDB,
+  getDB,
+  getCollection,
+};
 ```
 
 - app.js
@@ -278,63 +295,55 @@ module.exports = app;
 - server.js
 
 ```js
-const express = require('express');
-const app = express();
+require('dotenv').config();
 
-const cors = require('cors');
+const { default: chalk } = require('chalk');
+const app = require('./app');
+const { connectDB } = require('./config/db');
 
-const corsOptions = {
-  origin: ['http://localhost:5173', 'http://localhost:5174'],
-  credentials: true,
-  optionSuccessStatus: 200,
+const PORT = process.env.PORT || 8000;
+
+const startServer = async () => {
+  try {
+    // 1️⃣ Connect MongoDB
+    const db = await connectDB();
+
+    // 2️⃣ List collections
+    const collections = await db.listCollections().toArray();
+    console.log('📂 Collections in DB:');
+    collections.forEach((c) => console.log(' -', c.name));
+
+    // 3️⃣ Start Express server
+    app.listen(PORT, () => {
+      console.log(
+        chalk.magenta.bold(
+          `🔥 Career Code Server is Running at http://localhost:${PORT}`,
+        ),
+      );
+    });
+  } catch (error) {
+    console.error(chalk.red('❌ Failed to start server:'), error);
+    process.exit(1);
+  }
 };
-app.use(cors(corsOptions));
-
-app.use(express.json());
-app.use(cookieParser());
-
-app.get('/', (_, res) => {
-  res.send('🚀 Career Code API is Running!');
-});
-
-module.exports = app;
+startServer();
 ```
 
-# 4. Layout Setup In [Client] Side
+# 4. Layout Setup in [Client] Side
 
 - RootLayout.jsx
 
 ```js
 import { Outlet } from 'react-router';
-import { Footer, NavBar } from '../Components/Index';
-
-/** 📱🖥️ দেখতে কেমন হবে
- *
- *|Screen    | Width
- * --------- | -----------------|
- * 📱 Mobile  | 94%
- * 💻 Tablet | 90%
- * 💻 Laptop | 88%
- * 🖥️ Large monitor | 85% (max 7xl)
- */
+import { Footer, NavBar } from '../components/Index';
 
 const RootLayout = () => {
   return (
-    <div
-      className='
-    w-[94%]
-    sm:w-[92%]
-    md:w-[90%]
-    lg:w-[88%]
-    xl:w-[85%]
-    max-w-7xl
-    mx-auto
-  '
-    >
+    <div>
       {/* Header */}
       <NavBar />
       {/* Main Outlet */}
-      <div className='min-h-[calc(100vh-306px)]'>
+      <div className='pt-24 min-h-[calc(100vh-68px)]'>
         <Outlet />
       </div>
       {/* Footer */}
@@ -417,7 +426,7 @@ const ErrorPage = () => {
 export default ErrorPage;
 ```
 
-# 5. Router Setup In [Client] Side
+# 5. Router Setup in [Client] Side
 
 - Routes.jsx
 
@@ -544,17 +553,19 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 );
 ```
 
-# 6. Get All Rooms From DB In [Server] Side
+# 6. Get All Rooms From DB in [Server] Side
 
 - rooms.controller.js
 
 ```js
-const { getDB } = require('../config/db');
+const { ObjectId } = require('mongodb');
+const { getCollection } = require('../config/db');
 const { asyncHandler } = require('../middlewares/async.middleware');
+
+/** 6.1 Get All Rooms Controller */
 const getAllRoomsController = asyncHandler(async (req, res) => {
-  const db = getDB();
-  const roomsCollection = await db.collection('rooms');
-  const cursor = await roomsCollection.find();
+  const roomsCollection = getCollection('rooms');
+  const cursor = roomsCollection.find();
   const rooms = await cursor.toArray();
   res.send(rooms);
 });
@@ -567,7 +578,7 @@ const express = require('express');
 const { getAllRoomsController } = require('../controllers/rooms.controller');
 const roomsRouter = express.Router();
 
-/** Get All Rooms Router */
+/** 6.2 Get All Rooms Router */
 roomsRouter.get('/rooms', getAllRoomsController);
 
 module.exports = { roomsRouter };
@@ -576,10 +587,52 @@ module.exports = { roomsRouter };
 - app.js
 
 ```js
+/** 6.3 Main Rooms Routes */
 app.use('/', roomsRouter);
 ```
 
-# 7. Setup @tanstack/react-query In [Client] Side
+# 7. Axios Setup For Base Url
+
+```js
+import axios from 'axios';
+
+/** 7. Axios Common Instance */
+const axiosCommon = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+});
+
+const AxiosCommon = () => {
+  return axiosCommon;
+};
+
+export { AxiosCommon };
+```
+
+# 8. Show All Rooms in [Client] Side
+
+- Home.jsx
+
+```js
+import { Helmet } from 'react-helmet-async';
+import Rooms from '../../components/Home/Rooms';
+
+const Home = () => {
+  return (
+    <div>
+      <Helmet>
+        <title>StayVista | Vacation Homes & Condo Rentals</title>
+      </Helmet>
+
+      {/* 8.1 Rooms section */}
+      <Rooms />
+    </div>
+  );
+};
+
+export default Home;
+```
+
+# 9. Setup @tanstack/react-query in [Client] Side
 
 - main.jsx
 
@@ -594,11 +647,12 @@ import './index.css';
 import AuthProvider from './providers/AuthProvider';
 import { AppRouter } from './routes/Routes';
 
+/** 9.1 tanstack query client */
 const queryClient = new QueryClient();
 ReactDOM.createRoot(document.getElementById('root')).render(
   /** Helmet Provider */
   <HelmetProvider>
-    {/* tanstack query Provider */}
+    {/* 9.2 tanstack query Provider */}
     <QueryClientProvider client={queryClient}>
       {/* Auth Provider */}
       <AuthProvider>
@@ -611,37 +665,48 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 );
 ```
 
-# 8. Get All Rooms Show In [Client] Side with @tanstack/react-query
+# 10. Get All Rooms Show in [Client] Side with @tanstack/react-query
 
 - Rooms.jsx
 
 ```js
 import { useQuery } from '@tanstack/react-query';
 import useAxiosCommon from '../../hooks/useAxiosCommon';
-const axiosCommon = useAxiosCommon();
-const {
-  data: rooms = [],
-  isLoading,
-  isPending,
-  isError,
-} = useQuery({
-  queryKey: ['rooms'],
-  queryFn: async () => {
-    const { data } = await axiosCommon.get('/rooms');
-    return data;
-  },
-});
 
-if (isLoading) return <LoadingSpinner />;
-if (isPending) return <LoadingSpinner />;
-if (isError) return <div>Error: {isError.message}</div>;
+const Rooms = () => {
+  const axiosCommon = useAxiosCommon();
+  const {
+    data: rooms = [],
+    isLoading,
+    isPending,
+    isError,
+  } = useQuery({
+    queryKey: ['rooms'],
+    queryFn: async () => {
+      /** 10. All Rooms Show with use Axios */
+      const { data } = await axiosCommon.get('/rooms');
+      return data;
+    },
+  });
+
+  if (isLoading) return <LoadingSpinner />;
+  if (isPending) return <LoadingSpinner />;
+  if (isError) return <div>Error: {isError.message}</div>;
+
+  return <></>;
+};
 ```
 
-# 9. Get Single Room By Id In [Server] Side
+# 11. Get Single Room By Id in [Server] Side
 
 - rooms.controller.js
 
 ```js
+const { ObjectId } = require('mongodb');
+const { getCollection } = require('../config/db');
+const { asyncHandler } = require('../middlewares/async.middleware');
+
+/** 11.1 Get Room by ID Controller */
 const getRoomByIdController = asyncHandler(async (req, res) => {
   const roomsCollection = getCollection('rooms');
   const roomId = req.params.id;
@@ -652,44 +717,61 @@ const getRoomByIdController = asyncHandler(async (req, res) => {
   }
   res.send(room);
 });
+
+module.exports = { getRoomByIdController };
 ```
 
 - rooms.routes.js
 
 ```js
+/** 11.2 Get Room by ID Router */
 roomsRouter.get('/room/:id', getRoomByIdController);
 ```
 
-# 10. Get Single Room By Id In [Client] Side
+# 12. Get Single Room By Id in [Client] Side
 
 - RoomDetails.jsx
 
 ```js
-const { id } = useParams();
-const axiosCommon = useAxiosCommon();
+import { useQuery } from '@tanstack/react-query';
+import { Helmet } from 'react-helmet-async';
+import { useParams } from 'react-router';
+import RoomReservation from '../../components/RoomDetails/RoomReservation';
+import Container from '../../components/Shared/Container';
+import Heading from '../../components/Shared/Heading';
+import LoadingSpinner from '../../components/Shared/LoadingSpinner';
+import { AxiosCommon } from '../../Api/Axios/AxiosCommon';
 
-/** 10. Fetch Data From Server with Tanstack */
-const {
-  data: room = {},
-  isLoading,
-  isPending,
-  isError,
-} = useQuery({
-  queryKey: ['room', id],
-  queryFn: async () => {
-    const { data } = await axiosCommon.get(`/room/${id}`);
-    return data;
-  },
-});
+const RoomDetails = () => {
+  const { id } = useParams();
+  const axiosCommon = AxiosCommon();
 
-if (isLoading || isPending) return <LoadingSpinner />;
-if (isError) return <div>Error: {isError.message}</div>;
+  /** 12.1 Fetch Data From Server with Tanstack */
+  const {
+    data: room = {},
+    isLoading,
+    isPending,
+    isError,
+  } = useQuery({
+    queryKey: ['room', id],
+    queryFn: async () => {
+      /** Single Room Fetching with Id */
+      const { data } = await axiosCommon.get(`/room/${id}`);
+      return data;
+    },
+  });
+
+  if (isLoading || isPending) return <LoadingSpinner />;
+  if (isError) return <div>Error: {isError.message}</div>;
+  return <></>;
+};
 ```
 
 - Routes.jsx
 
 ```js
   {
+    /** 12.2 Single Room Details */
     path: '/room/:id',
     Component: PrivateRoute,
     children: [
@@ -700,3 +782,303 @@ if (isError) return <div>Error: {isError.message}</div>;
     ],
   },
 ```
+
+# 13. Install Query String in [Client] Side
+
+```js
+npm i query-string
+```
+
+# 14. Show Categories [Client] Side
+
+- Home.jsx
+
+```js
+import { Helmet } from 'react-helmet-async';
+import Categories from '../../components/Categories/Categories';
+
+const Home = () => {
+  return (
+    <div>
+      <Helmet>
+        <title>StayVista | Vacation Homes & Condo Rentals</title>
+      </Helmet>
+
+      {/* 14.1 Categories section  */}
+      <Categories />
+    </div>
+  );
+};
+
+export default Home;
+```
+
+- Categories.jsx
+
+```js
+import { Helmet } from 'react-helmet-async';
+import Categories from '../../components/Categories/Categories';
+
+const Home = () => {
+  return (
+    <div>
+      <Helmet>
+        <title>StayVista | Vacation Homes & Condo Rentals</title>
+      </Helmet>
+
+      {/* 14.1 Categories section  */}
+      <Categories />
+    </div>
+  );
+};
+
+export default Home;
+```
+
+- CategoriesData.js
+
+```js
+import { BsSnow } from 'react-icons/bs';
+import { FaSkiing } from 'react-icons/fa';
+import {
+  GiBarn,
+  GiBoatFishing,
+  GiCactus,
+  GiCastle,
+  GiCaveEntrance,
+  GiForestCamp,
+  GiIsland,
+  GiWindmill,
+} from 'react-icons/gi';
+import { IoDiamond } from 'react-icons/io5';
+import { MdOutlineVilla } from 'react-icons/md';
+import { TbBeach, TbMountain, TbPool } from 'react-icons/tb';
+
+/** 14.2 Categories Data */
+const categories = [
+  {
+    label: 'Beach',
+    icon: TbBeach,
+    description: 'This property is close to the beach!',
+  },
+  {
+    label: 'Windmills',
+    icon: GiWindmill,
+    description: 'This property is has windmills!',
+  },
+  {
+    label: 'Modern',
+    icon: MdOutlineVilla,
+    description: 'This property is modern!',
+  },
+  {
+    label: 'Countryside',
+    icon: TbMountain,
+    description: 'This property is in the countryside!',
+  },
+  {
+    label: 'Pools',
+    icon: TbPool,
+    description: 'This is property has a beautiful pool!',
+  },
+  {
+    label: 'Islands',
+    icon: GiIsland,
+    description: 'This property is on an island!',
+  },
+  {
+    label: 'Lake',
+    icon: GiBoatFishing,
+    description: 'This property is near a lake!',
+  },
+  {
+    label: 'Skiing',
+    icon: FaSkiing,
+    description: 'This property has skiing activities!',
+  },
+  {
+    label: 'Castles',
+    icon: GiCastle,
+    description: 'This property is an ancient castle!',
+  },
+  {
+    label: 'Caves',
+    icon: GiCaveEntrance,
+    description: 'This property is in a spooky cave!',
+  },
+  {
+    label: 'Camping',
+    icon: GiForestCamp,
+    description: 'This property offers camping activities!',
+  },
+  {
+    label: 'Arctic',
+    icon: BsSnow,
+    description: 'This property is in arctic environment!',
+  },
+  {
+    label: 'Desert',
+    icon: GiCactus,
+    description: 'This property is in the desert!',
+  },
+  {
+    label: 'Barns',
+    icon: GiBarn,
+    description: 'This property is in a barn!',
+  },
+  {
+    label: 'Lux',
+    icon: IoDiamond,
+    description: 'This property is brand new and luxurious!',
+  },
+];
+
+export { categories };
+```
+
+- Categories.jsx
+
+```js
+import Container from '../Shared/Container';
+import { categories } from './CategoriesData.js';
+import CategoryBox from './CategoryBox';
+
+/** 14.3 Categories Parent Component */
+const Categories = () => {
+  return (
+    <Container>
+      <div className='pt-4 flex items-center justify-between overflow-x-auto'>
+        {categories.map((item) => (
+          <CategoryBox
+            key={item.label}
+            label={item.label}
+            icon={item.icon}
+          />
+        ))}
+      </div>
+    </Container>
+  );
+};
+
+export default Categories;
+```
+
+- CategoryBox.jsx
+
+```js
+import queryString from 'query-string';
+import { useNavigate, useSearchParams } from 'react-router';
+
+/** 15.4 Category Box Component */
+const CategoryBox = ({ label, icon: Icon }) => {
+  /** 15.1 Create Query String & Get Link with Query String */
+  const [params] = useSearchParams();
+  const category = params.get('category');
+  // console.log(category === label);
+  const navigate = useNavigate();
+  const handleClick = () => {
+    let currentQuery = {};
+    if (category !== label) {
+      currentQuery.category = label;
+    }
+    const url = queryString.stringifyUrl(
+      {
+        url: window.location.href,
+        query: currentQuery || '/',
+      },
+      { skipNull: true },
+    );
+    navigate(url);
+  };
+  return (
+    <div
+      onClick={handleClick}
+      className={`flex 
+  flex-col 
+  items-center 
+  justify-center 
+  gap-2
+  p-3
+  border-b-2
+  hover:text-rose-500
+  transition
+  cursor-pointer ${category === label && 'border-rose-500'}
+  ${category === label ? 'text-rose-500' : 'text-neutral-500'}
+  `}
+    >
+      {Icon && <Icon size={26} />}
+      <div className='text-sm font-medium'>{label}</div>
+    </div>
+  );
+};
+
+export default CategoryBox;
+```
+
+# 15. Query Set in Url in [Client] Side
+
+- CategoryBox.jsx
+
+```js
+import queryString from 'query-string';
+import { useNavigate, useSearchParams } from 'react-router';
+
+const CategoryBox = ({ label, icon: Icon }) => {
+  /** 15.1 Create Query String & Get Link with Query String */
+  const [params] = useSearchParams();
+  const category = params.get('category');
+  // console.log(category === label);
+  const navigate = useNavigate();
+  const handleClick = () => {
+    let currentQuery = {};
+    if (category !== label) {
+      currentQuery.category = label;
+    }
+    const url = queryString.stringifyUrl(
+      {
+        url: window.location.href,
+        // url: '/',
+        query: currentQuery || '/',
+      },
+      { skipNull: true },
+    );
+    navigate(url);
+  };
+};
+```
+
+- Rooms.jsx
+
+```js
+const Rooms = () => {
+  const axiosCommon = AxiosCommon();
+
+  /** 15.2 Query Set in Url */
+  const [params] = useSearchParams();
+  const category = params.get('category');
+
+  /** 8. Fetch Data From Server with Tanstack Query */
+  const {
+    data: rooms = [],
+    isLoading,
+    isPending,
+    isError,
+  } = useQuery({
+    queryKey: ['rooms', category],
+    queryFn: async () => {
+      /** Query String Set in Url */
+      const url = category ? `/rooms?category=${category}` : '/rooms';
+
+      const { data } = await axiosCommon.get(url);
+      return data;
+    },
+  });
+  if (isLoading) return <LoadingSpinner />;
+  if (isPending) return <LoadingSpinner />;
+  if (isError) return <div>Error: {isError.message}</div>;
+
+  return <></>;
+};
+```
+
+# 16. Query Set in [Server] Side

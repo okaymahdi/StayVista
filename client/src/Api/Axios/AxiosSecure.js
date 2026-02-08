@@ -1,13 +1,13 @@
 import axios from 'axios';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import useAuth from './useAuth';
+import useAuth from '../../hooks/useAuth';
 
 export const axiosSecure = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true,
 });
-const useAxiosSecure = () => {
+const AxiosSecure = () => {
   const { logOut } = useAuth();
   const navigate = useNavigate();
   useEffect(() => {
@@ -29,4 +29,4 @@ const useAxiosSecure = () => {
   return axiosSecure;
 };
 
-export { useAxiosSecure };
+export { AxiosSecure };

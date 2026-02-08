@@ -36,7 +36,7 @@ app.get('/', (_, res) => {
   res.send('🚀 Career Code API is Running!');
 });
 
-/** Rooms Routes */
+/** 6.3 Main Rooms Routes */
 app.use('/', roomsRouter);
 
 module.exports = app;

@@ -25,6 +25,7 @@ const Router = createBrowserRouter([
         Component: Home,
       },
       {
+        /** 12.2 Single Room Details */
         path: '/room/:id',
         Component: PrivateRoute,
         children: [

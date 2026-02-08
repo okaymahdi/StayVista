@@ -1,8 +1,8 @@
 const { ObjectId } = require('mongodb');
-const { getDB, getCollection } = require('../config/db');
+const { getCollection } = require('../config/db');
 const { asyncHandler } = require('../middlewares/async.middleware');
 
-/** Get All Rooms Controller */
+/** 6.1 Get All Rooms Controller */
 const getAllRoomsController = asyncHandler(async (req, res) => {
   const roomsCollection = getCollection('rooms');
   const cursor = roomsCollection.find();
@@ -10,7 +10,7 @@ const getAllRoomsController = asyncHandler(async (req, res) => {
   res.send(rooms);
 });
 
-/** Get Room by ID Controller */
+/** 11.1 Get Room by ID Controller */
 const getRoomByIdController = asyncHandler(async (req, res) => {
   const roomsCollection = getCollection('rooms');
   const roomId = req.params.id;

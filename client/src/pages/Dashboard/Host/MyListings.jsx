@@ -4,11 +4,11 @@ import toast from 'react-hot-toast';
 import RoomDataRow from '../../../components/Dashboard/TableRows/RoomDataRows';
 import LoadingSpinner from '../../../components/Shared/LoadingSpinner';
 import useAuth from '../../../hooks/useAuth';
-import useAxiosSecure from '../../../hooks/useAxiosSecure';
+import { AxiosSecure } from '../../../Api/Axios/AxiosSecure';
 
 const MyListings = () => {
   const { user } = useAuth();
-  const axiosSecure = useAxiosSecure();
+  const axiosSecure = AxiosSecure();
 
   /** Fetch Rooms Data From Server */
   const {

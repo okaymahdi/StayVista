@@ -1,7 +1,9 @@
 import queryString from 'query-string';
 import { useNavigate, useSearchParams } from 'react-router';
 
+/** 15.4 Category Box Component */
 const CategoryBox = ({ label, icon: Icon }) => {
+  /** 15.1 Create Query String & Get Link with Query String */
   const [params] = useSearchParams();
   const category = params.get('category');
   // console.log(category === label);
@@ -15,12 +17,11 @@ const CategoryBox = ({ label, icon: Icon }) => {
       {
         url: window.location.href,
         // url: '/',
-        query: currentQuery,
+        query: currentQuery || '/',
       },
       { skipNull: true },
     );
     navigate(url);
-    // console.log(url);
   };
   return (
     <div

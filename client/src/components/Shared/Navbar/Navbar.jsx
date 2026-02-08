@@ -4,12 +4,12 @@ import { AiOutlineMenu } from 'react-icons/ai';
 import { Link } from 'react-router';
 import avatarImg from '../../../assets/images/placeholder.jpg';
 import useAuth from '../../../hooks/useAuth';
-import useAxiosSecure from '../../../hooks/useAxiosSecure';
 import HostRequestModal from '../../Modal/HostRequestModal';
 import Container from '../Container';
+import { AxiosSecure } from '../../../Api/Axios/AxiosSecure';
 
 const Navbar = () => {
-  const axiosSecure = useAxiosSecure();
+  const axiosSecure = AxiosSecure();
   const { user, logOut } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
 
