@@ -565,6 +565,8 @@ const { asyncHandler } = require('../middlewares/async.middleware');
 /** 6.1 Get All Rooms Controller */
 const getAllRoomsController = asyncHandler(async (req, res) => {
   const roomsCollection = getCollection('rooms');
+
+  /** 🔍 Find all Rooms without Query Parameters */
   const cursor = roomsCollection.find();
   const rooms = await cursor.toArray();
   res.send(rooms);
@@ -1081,4 +1083,26 @@ const Rooms = () => {
 };
 ```
 
-# 16. Query Set in [Server] Side
+# 16. Query Set with Category in [Server] Side
+
+- rooms.controller.js
+
+```js
+const getAllRoomsController = asyncHandler(async (req, res) => {
+  const roomsCollection = getCollection('rooms');
+  /** 16. 🔍 Find Room by Category */
+  const category = req.query.category;
+  let query = {};
+  if (category) {
+    query = { category };
+  }
+
+  /** 🔍 Find all Rooms without Query Parameters */
+  const cursor = roomsCollection.find();
+
+  /** 16. 🔍 Find Room by Category */
+  const cursor = roomsCollection.find(query);
+  const rooms = await cursor.toArray();
+  res.send(rooms);
+});
+```
